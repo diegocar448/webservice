@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 /*
@@ -21,13 +23,12 @@ use Illuminate\Support\Facades\Validator;
 // s});
 
 Route::post('/cadastro', function (Request $request){
-    $data = $request->all();
-
+    $data = $request->only(['email', 'password']);
+    
 
     $validacao = Validator::make($data, [
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:6|confirmed',
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string',
         
     ]);
 
@@ -35,8 +36,7 @@ Route::post('/cadastro', function (Request $request){
     if ($validacao->fails()) {
         return $validacao->errors();
     }
-
-
+    
     $user = User::create([
         'name' => $data['name'],
         'email' => $data['email'],
@@ -44,9 +44,36 @@ Route::post('/cadastro', function (Request $request){
         
     ]);
     
-    $user->token = $user->createToken($user->email)->accessToken;
+    
 
     return $user;
+    
+});
+
+
+Route::post('/login', function (Request $request){
+    $data = $request->only(['email', 'password']);
+    
+
+    $validacao = Validator::make($data, [
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string',
+    ]);
+
+
+    if ($validacao->fails()) {
+        return $validacao->errors();
+    }
+    
+    
+    if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
+        
+        $user = auth()->user();
+        $user->token = $user->createToken($user->email)->accessToken;
+        return $user;
+    }else{
+        return ['status' => false];
+    }
     
 });
 
