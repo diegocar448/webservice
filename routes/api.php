@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,8 +19,16 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 // s});
 
-Route::get('/teste', function (Request $request){
-    return 'ok';
+Route::post('/cadastro', function (Request $request){
+    $data = $request->all();
+    $user = User::create([
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'password' => $data['password'],
+        
+    ]);
+
+    return $data;
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
