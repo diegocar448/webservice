@@ -24,14 +24,17 @@ Route::post('/cadastro', function (Request $request){
     $user = User::create([
         'name' => $data['name'],
         'email' => $data['email'],
-        'password' => $data['password'],
+        'password' => bcrypt($data['password']),
         
     ]);
+    
+    $user->token = $user->createToken($user->email)->accessToken;
 
-    return $data;
+    return $user;
+    
 });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/usuario', function (Request $request) {
     return $request->user();
 });
 
