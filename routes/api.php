@@ -57,7 +57,7 @@ Route::post('/login', function (Request $request){
     
 
     $validacao = Validator::make($data, [
-        'email' => 'required|string|email|max:255|unique:users',
+        'email' => 'required|string|email|max:255',
         'password' => 'required|string',
     ]);
 
