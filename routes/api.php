@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Validator;
 // s});
 
 Route::post('/cadastro', function (Request $request){
-    $data = $request->only(['email', 'password']);
+    $data = $request->all();
     
 
     $validacao = Validator::make($data, [
@@ -42,23 +42,23 @@ Route::post('/cadastro', function (Request $request){
         'name' => $data['name'],
         'email' => $data['email'],
         'password' => bcrypt($data['password']),
-        
+        'token' => bcrypt($data['password']),        
     ]);
     
     
-
-    return $user;
+    $idUser = User::find($user->id);
+    return $idUser;
     
 });
 
 
 Route::post('/login', function (Request $request){
-    $data = $request->only(['email', 'password']);
+    $data = $request->all(['email', 'password']);
     
 
-    $validacao = Validator::make($data, [
+    $validacao = Validator::make($data, [        
         'email' => 'required|string|email|max:255',
-        'password' => 'required|string',
+        'password' => 'required|string',        
     ]);
 
 
@@ -70,8 +70,9 @@ Route::post('/login', function (Request $request){
     if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
         
         $user = auth()->user();
-        $user->token = $user->createToken($user->email)->accessToken;
-        return $user;
+        //$user->token = $user->createToken($user->email)->accessToken;
+        $userTodosCampos = User::find($user->id);
+        return $userTodosCampos;
     }else{
         return ['status' => false];
     }
