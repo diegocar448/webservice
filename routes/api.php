@@ -41,19 +41,19 @@ Route::post('/cadastro', function (Request $request){
     $user = User::create([
         'name' => $data['name'],
         'email' => $data['email'],
-        'password' => bcrypt($data['password']),
-        'token' => bcrypt($data['password']),        
+        'password' => bcrypt($data['password']),               
     ]);
+    $user->token = $user->createToken($user->email)->accessToken;
     
-    
-    $idUser = User::find($user->id);
-    return $idUser;
+    //$idUser = User::find($user->id);
+    //return $idUser;
+    return $user;
     
 });
 
 
 Route::post('/login', function (Request $request){
-    $data = $request->all(['email', 'password']);
+    $data = $request->all();
     
 
     $validacao = Validator::make($data, [        
@@ -70,9 +70,9 @@ Route::post('/login', function (Request $request){
     if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
         
         $user = auth()->user();
-        //$user->token = $user->createToken($user->email)->accessToken;
-        $userTodosCampos = User::find($user->id);
-        return $userTodosCampos;
+        $user->token = $user->createToken($user->email)->accessToken;
+       
+        return $user;
     }else{
         return ['status' => false];
     }
@@ -81,5 +81,13 @@ Route::post('/login', function (Request $request){
 
 Route::middleware('auth:api')->get('/usuario', function (Request $request) {
     return $request->user();
+});
+
+
+Route::middleware('auth:api')->put('/perfil', function (Request $request) {
+    $user = $request->user();
+    $data = $request->all();
+
+    return $data;
 });
 
