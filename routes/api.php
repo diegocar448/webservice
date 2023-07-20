@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Http\Request;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
@@ -28,9 +29,8 @@ Route::post('/cadastro', function (Request $request){
 
     $validacao = Validator::make($data, [
         'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:6|confirmed',
-        
+        'email' => 'required|string|email|max:255|unique:users',        
+        'password' => 'required|string|min:6|confirmed',        
     ]);
 
 
@@ -88,6 +88,38 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
     $user = $request->user();
     $data = $request->all();
 
-    return $data;
+    if (isset($data['password'])) {
+        $validacao = Validator::make($data, [
+            'name' => 'required|string|max:255',            
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],                
+        ]);
+        
+        if ($validacao->fails()) {
+            return $validacao->errors();
+        }
+
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->password = bcrypt($data['password']);
+    }else{
+
+        $validacao = Validator::make($data, [
+            'name' => 'required|string|max:255',            
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'password' => 'required|string|min:6|confirmed',            
+        ]);
+        
+        if ($validacao->fails()) {
+            return $validacao->errors();
+        }
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+    }
+
+    
+    $user->save();
+    $user->token = $user->createToken($user->email)->accessToken;
+
+    return $user;
 });
 
