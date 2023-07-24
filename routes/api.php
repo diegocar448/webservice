@@ -118,24 +118,27 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
 
     if (isset($data['imagem'])) {
         $time = time();
-        $diretorioPai = 'http://127.0.0.1:8000/perfils';
-        $diretorioImagem = $diretorioPai.DIRECTORY_SEPARATOR.'perfil_id'.$user->id;
-        $ext = substr($data['imagem'], 11, strpos($data['imagem'], ';') -11);
-        $urlImagem = $diretorioImagem.DIRECTORY_SEPARATOR.$time.'.'.$ext;
-
-        $file = str_replace('data:image/'.$ext.';base64,', '', $data['imagem']);
+        $diretorioPai = public_path('perfils');
+        $diretorioImagem = $diretorioPai . '/perfil_id' . $user->id;
+        $diretorioNaUrl = 'http://localhost:8000/perfils/perfil_id' . $user->id;
+        
+        $ext = substr($data['imagem'], 11, strpos($data['imagem'], ';') - 11);
+        $urlImagem = $diretorioImagem . DIRECTORY_SEPARATOR . $time . '.' . $ext;
+        $diretorioAsset = $diretorioNaUrl . DIRECTORY_SEPARATOR .$time . '.' . $ext;
+        
+        $file = str_replace('data:image/' . $ext . ';base64,', '', $data['imagem']);
         $file = base64_decode($file);
-
+    
         if (!file_exists($diretorioPai)) {
-            mkdir($diretorioPai, 0700);
+            mkdir($diretorioPai, 0700, true);
         }
         if (!file_exists($diretorioImagem)) {
-            mkdir($diretorioImagem, 0700);
+            mkdir($diretorioImagem, 0700, true);
         }
 
         file_put_contents($urlImagem, $file);
-
-        $user->imagem = $urlImagem;
+        
+        $user->imagem = $diretorioAsset;
     }
 
     
@@ -146,4 +149,3 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
 
     return $user;
 });
-
