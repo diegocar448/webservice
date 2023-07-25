@@ -87,7 +87,7 @@ Route::middleware('auth:api')->get('/usuario', function (Request $request) {
 Route::middleware('auth:api')->put('/perfil', function (Request $request) {
     $user = $request->user();
     $data = $request->all();
-
+    
     if (isset($data['password'])) {
         $validacao = Validator::make($data, [
             'name' => 'required|string|max:255',            
@@ -115,7 +115,7 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
         $user->name = $data['name'];
         $user->email = $data['email'];
     }
-
+    
     if (isset($data['imagem'])) {
         $time = time();
         $diretorioPai = public_path('perfils');
@@ -132,6 +132,18 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
         if (!file_exists($diretorioPai)) {
             mkdir($diretorioPai, 0700, true);
         }
+        
+        // Remover o arquivo antigo antes de adicionar o mais recente
+        if($user->imagem){
+            $arrayNameImagem = explode("/",$user->imagem);
+            $oldNameImage = end($arrayNameImagem);
+            
+            unlink($diretorioImagem.DIRECTORY_SEPARATOR.$oldNameImage);     
+        }
+           
+        
+
+
         if (!file_exists($diretorioImagem)) {
             mkdir($diretorioImagem, 0700, true);
         }
@@ -140,7 +152,7 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
         
         $user->imagem = $diretorioAsset;
     }
-
+    
     
     $user->save();
 
