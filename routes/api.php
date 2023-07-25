@@ -117,6 +117,59 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
     }
     
     if (isset($data['imagem'])) {
+
+        
+        // Validator::extend('base64image', function($attribute, $value, $parameters, $validator){
+        //     $explode = explode(',', $value);
+        //     $allow = ['png', 'jpg', 'svg', 'jpeg'];
+            
+        //     $format = str_replace(
+        //         [
+        //             'data:image/',
+        //             ';',
+        //             'base64',                
+        //         ],
+        //         [
+        //             '','','',
+        //         ],
+        //         $explode[0]            
+        //     );
+
+            
+            
+        //     // check file format
+        //     if (!in_array($format, $allow)) {                
+        //         return false;
+        //     }
+            
+        //     // //check base64 format
+        //     if (!preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $explode[1])) {
+        //         return false;
+        //     }
+            
+        //     return true;        
+        // });
+
+
+        
+        
+        
+        // $validacao = Validator::make($data, [
+        //     'imagem' => 'base64image',                        
+        // ], ['base64image' => 'Imagem inválida']);
+
+        
+        
+        // if ($validacao->fails()) {            
+        //     return $validacao->errors();
+        // }
+
+        
+
+        
+        
+
+
         $time = time();
         $diretorioPai = public_path('perfils');
         $diretorioImagem = $diretorioPai . '/perfil_id' . $user->id;
@@ -127,7 +180,34 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
         $diretorioAsset = $diretorioNaUrl . DIRECTORY_SEPARATOR .$time . '.' . $ext;
         
         $file = str_replace('data:image/' . $ext . ';base64,', '', $data['imagem']);
+        $value = $file;
         $file = base64_decode($file);
+        
+
+         
+        $image = base64_decode($value);
+        $f = finfo_open();
+        $result = finfo_buffer($f, $image, FILEINFO_MIME_TYPE);
+        
+        
+
+        // $imagemValida = Validator::make($result, [
+        //     'imagem' => 'base64image',                        
+        // ], ['base64image' => 'Imagem inválida']);
+        
+        if ($result == 'image/png' || $result == 'image/jpg' || $result == 'image/jpeg') {            
+            
+        }else{
+            return ['imagem' => 'Imagem inválida'];
+        }
+
+
+
+
+
+
+        
+              
     
         if (!file_exists($diretorioPai)) {
             mkdir($diretorioPai, 0700, true);
@@ -137,8 +217,10 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
         if($user->imagem){
             $arrayNameImagem = explode("/",$user->imagem);
             $oldNameImage = end($arrayNameImagem);
-            
-            unlink($diretorioImagem.DIRECTORY_SEPARATOR.$oldNameImage);     
+            try {
+                unlink($diretorioImagem.DIRECTORY_SEPARATOR.$oldNameImage);
+            } catch (\Throwable $th) {                
+            }            
         }
            
         
@@ -161,3 +243,5 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
 
     return $user;
 });
+
+
