@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('amigos', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->bigInteger('amigo_id')->unsigned()->nullable();
+            $table->foreign('amigo_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

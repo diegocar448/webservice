@@ -12,7 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('comentarios', function (Blueprint $table) {
-            $table->id();
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
+            $table->increments('id');
+            $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->bigInteger('conteudo_id')->unsigned()->nullable();
+            $table->foreign('conteudo_id')->references('id')->on('conteudos')->onDelete('cascade');
+            $table->longText('texto');
+            $table->dateTime('data');
             $table->timestamps();
         });
     }

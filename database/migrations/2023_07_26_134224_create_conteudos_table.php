@@ -12,7 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('conteudos', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('titulo');
+            $table->longText('texto');
+            $table->string('imagem');
+            $table->string('link');
+            $table->dateTime('data');
             $table->timestamps();
         });
     }
