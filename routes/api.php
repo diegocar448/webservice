@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\UsuarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,44 +38,22 @@ Route::post('/cadastro', function (Request $request){
     if ($validacao->fails()) {
         return $validacao->errors();
     }
+
+    $imagem = "http://localhost:8000/perfils/profile.jpeg";
     
     $user = User::create([
         'name' => $data['name'],
         'email' => $data['email'],
         'password' => bcrypt($data['password']),               
+        'imagem' => $imagem,               
     ]);
     $user->token = $user->createToken($user->email)->accessToken;    
     return $user;
     
 });
 
+Route::post('/login', [UsuarioController::class, 'login']);
 
-Route::post('/login', function (Request $request){
-    $data = $request->all();
-    
-
-    $validacao = Validator::make($data, [        
-        'email' => 'required|string|email|max:255',
-        'password' => 'required|string',        
-    ]);
-
-
-    if ($validacao->fails()) {
-        return $validacao->errors();
-    }
-    
-    
-    if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
-        
-        $user = auth()->user();
-        $user->token = $user->createToken($user->email)->accessToken;
-        $user->imagem = asset($user->imagem);
-        return $user;
-    }else{
-        return ['status' => false];
-    }
-    
-});
 
 Route::middleware('auth:api')->get('/usuario', function (Request $request) {
     return $request->user();
@@ -114,59 +93,6 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
     }
     
     if (isset($data['imagem'])) {
-
-        
-        // Validator::extend('base64image', function($attribute, $value, $parameters, $validator){
-        //     $explode = explode(',', $value);
-        //     $allow = ['png', 'jpg', 'svg', 'jpeg'];
-            
-        //     $format = str_replace(
-        //         [
-        //             'data:image/',
-        //             ';',
-        //             'base64',                
-        //         ],
-        //         [
-        //             '','','',
-        //         ],
-        //         $explode[0]            
-        //     );
-
-            
-            
-        //     // check file format
-        //     if (!in_array($format, $allow)) {                
-        //         return false;
-        //     }
-            
-        //     // //check base64 format
-        //     if (!preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $explode[1])) {
-        //         return false;
-        //     }
-            
-        //     return true;        
-        // });
-
-
-        
-        
-        
-        // $validacao = Validator::make($data, [
-        //     'imagem' => 'base64image',                        
-        // ], ['base64image' => 'Imagem inválida']);
-
-        
-        
-        // if ($validacao->fails()) {            
-        //     return $validacao->errors();
-        // }
-
-        
-
-        
-        
-
-
         $time = time();
         $diretorioPai = public_path('perfils');
         $diretorioImagem = $diretorioPai . '/perfil_id' . $user->id;
@@ -185,25 +111,13 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
         $image = base64_decode($value);
         $f = finfo_open();
         $result = finfo_buffer($f, $image, FILEINFO_MIME_TYPE);
-        
-        
-
-        // $imagemValida = Validator::make($result, [
-        //     'imagem' => 'base64image',                        
-        // ], ['base64image' => 'Imagem inválida']);
+    
         
         if ($result == 'image/png' || $result == 'image/jpg' || $result == 'image/jpeg') {            
             
         }else{
             return ['imagem' => 'Imagem inválida'];
-        }
-
-
-
-
-
-
-        
+        }        
               
     
         if (!file_exists($diretorioPai)) {
@@ -235,7 +149,7 @@ Route::middleware('auth:api')->put('/perfil', function (Request $request) {
     
     $user->save();
 
-    $user->token = asset($user->imagem);
+    $user->imagem = asset($user->imagem);
     $user->token = $user->createToken($user->email)->accessToken;
 
     return $user;
