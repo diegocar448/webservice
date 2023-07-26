@@ -43,10 +43,7 @@ Route::post('/cadastro', function (Request $request){
         'email' => $data['email'],
         'password' => bcrypt($data['password']),               
     ]);
-    $user->token = $user->createToken($user->email)->accessToken;
-    
-    //$idUser = User::find($user->id);
-    //return $idUser;
+    $user->token = $user->createToken($user->email)->accessToken;    
     return $user;
     
 });
@@ -71,7 +68,7 @@ Route::post('/login', function (Request $request){
         
         $user = auth()->user();
         $user->token = $user->createToken($user->email)->accessToken;
-       
+        $user->imagem = asset($user->imagem);
         return $user;
     }else{
         return ['status' => false];
