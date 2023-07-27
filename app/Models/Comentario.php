@@ -22,12 +22,12 @@ class Comentario extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\Models\User');
     }
 
     public function conteudo()
     {
-        return $this->belongsTo('App\Conteudo');
+        return $this->belongsTo('App\Models\Conteudo');
     }
 
     

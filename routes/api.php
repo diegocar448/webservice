@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\User;
+use App\Models\Conteudo;
+use App\Models\Comentario;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Validation\Rule;
@@ -8,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\UsuarioController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +35,17 @@ Route::middleware('auth:api')->get('/usuario', [UsuarioController::class, 'usuar
 Route::middleware('auth:api')->put('/perfil', [UsuarioController::class, 'perfil']);
 
 
+Route::get('/testes', function(){
+    $user = User::find(1);
+    $user->conteudos()->create([
+        'titulo' => 'Conteudo3',
+        'texto' => 'Aqui um texto',
+        'imagem' => 'url da imagem',
+        'link' => 'Link',
+        'data' => '2023-07-27',
+    ]);
 
+    return $user->conteudos;
+});
 
 
