@@ -36,16 +36,32 @@ Route::middleware('auth:api')->put('/perfil', [UsuarioController::class, 'perfil
 
 
 Route::get('/testes', function(){
+    
     $user = User::find(1);
-    $user->conteudos()->create([
-        'titulo' => 'Conteudo3',
-        'texto' => 'Aqui um texto',
-        'imagem' => 'url da imagem',
-        'link' => 'Link',
-        'data' => '2023-07-27',
-    ]);
+    $user2 = User::find(2);
 
-    return $user->conteudos;
+    //modelo de como adicionar conteudos
+    // $user = User::find(1);
+    // $user->conteudos()->create([
+    //     'titulo' => 'Conteudo3',
+    //     'texto' => 'Aqui um texto',
+    //     'imagem' => 'url da imagem',
+    //     'link' => 'Link',
+    //     'data' => '2023-07-27',
+    // ]);
+    // return $user->conteudos;
+
+
+    
+    // adicionar amigos
+    //$user->amigos()->attach($user2->id);
+    //$user->amigos()->detach($user2->id);
+    //$user->amigos()->toggle($user2->id);
+    
+
+
+
+
 });
 
 
