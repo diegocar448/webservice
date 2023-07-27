@@ -58,9 +58,27 @@ Route::get('/testes', function(){
     //$user->amigos()->detach($user2->id);
     //$user->amigos()->toggle($user2->id);
     
+    
+    // adicionar curtidas
+    // $conteudo = Conteudo::find(1);
+    // $user->curtidas()->toggle($conteudo->id);
 
+    // return $conteudo->curtidas()->count();
+    //return $conteudo->curtidas();
 
-
+    // adicionar comentarios
+    $conteudo = Conteudo::find(1);
+    $user->comentarios()->create([
+        'conteudo_id' => $conteudo->id,
+        'texto' => 'Show',        
+        'data' => date('Y-m-d'),
+    ]);
+    $user2->comentarios()->create([
+        'conteudo_id' => $conteudo->id,
+        'texto' => 'Nop',        
+        'data' => date('Y-m-d'),
+    ]);
+    return $user2->comentarios;
 
 });
 
