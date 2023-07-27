@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ConteudoController;
 
 
 
@@ -32,6 +33,7 @@ use App\Http\Controllers\UsuarioController;
 Route::post('/cadastro', [UsuarioController::class, 'cadastro']);
 Route::post('/login', [UsuarioController::class, 'login']);
 Route::middleware('auth:api')->put('/perfil', [UsuarioController::class, 'perfil']);
+Route::middleware('auth:api')->post('/conteudo/adicionar', [ConteudoController::class, 'adicionar']);
 
 
 Route::get('/testes', function(){
