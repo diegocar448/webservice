@@ -43,4 +43,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function comentarios()
+    {
+        return $this->hasMany('App\Models\Comentario');
+    }
+    public function conteudos()
+    {
+        return $this->hasMany('App\Models\Conteudo');
+    }
+    public function curtidas()
+    {
+        return $this->belongsToMany('App\Models\Conteudo', 'curtidas', 'user_id', 'conteudo_id');
+    }
+    public function amigos()
+    {
+        return $this->belongsToMany('App\Models\User', 'amigos', 'user_id', 'amigo_id');
+    }
 }
