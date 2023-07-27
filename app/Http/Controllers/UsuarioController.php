@@ -21,7 +21,7 @@ class UsuarioController extends Controller
 
 
         if ($validacao->fails()) {
-            return $validacao->errors();
+            return ['status' => false, 'validacao'=> true, 'erros' => $validacao->errors()];
         }
         
         
@@ -30,7 +30,7 @@ class UsuarioController extends Controller
             $user = auth()->user();
             $user->token = $user->createToken($user->email)->accessToken;
             $user->imagem = asset($user->imagem);
-            return $user;
+            return ['status' => true, 'usuario' => $user];
         }else{
             return ['status' => false];
         }
@@ -48,7 +48,7 @@ class UsuarioController extends Controller
 
 
         if ($validacao->fails()) {
-            return $validacao->errors();
+            return ['status' => false, 'validacao'=> true, 'erros' => $validacao->errors()];
         }
 
         $imagem = "http://localhost:8000/perfils/profile.jpeg";
@@ -60,14 +60,8 @@ class UsuarioController extends Controller
             'imagem' => $imagem,               
         ]);
         $user->token = $user->createToken($user->email)->accessToken;    
-        return $user;
+        return ['status' => true, 'usuario' => $user];
     }
-
-    public function usuario(Request $request)
-    {
-        return $request->user();
-    }
-
     public function perfil(Request $request)
     {
         $user = $request->user();
@@ -80,7 +74,7 @@ class UsuarioController extends Controller
             ]);
             
             if ($validacao->fails()) {
-                return $validacao->errors();
+                return ['status' => false, 'validacao'=> true, 'erros' => $validacao->errors()];
             }
 
             $user->name = $data['name'];
@@ -95,7 +89,7 @@ class UsuarioController extends Controller
             ]);
             
             if ($validacao->fails()) {
-                return $validacao->errors();
+                return ['status' => false, 'validacao'=> true, 'erros' => $validacao->errors()];
             }
             $user->name = $data['name'];
             $user->email = $data['email'];
@@ -125,7 +119,7 @@ class UsuarioController extends Controller
             if ($result == 'image/png' || $result == 'image/jpg' || $result == 'image/jpeg') {            
                 
             }else{
-                return ['imagem' => 'Imagem inválida'];
+                return ['status' => false, 'validacao'=> true, 'erros' => 'Imagem inválida'];
             }        
                 
         
@@ -161,6 +155,7 @@ class UsuarioController extends Controller
         $user->imagem = asset($user->imagem);
         $user->token = $user->createToken($user->email)->accessToken;
 
-        return $user;
+        
+        return ['status' => true, 'usuario' => $user];
     }
 }
