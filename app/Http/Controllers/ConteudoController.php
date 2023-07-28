@@ -13,7 +13,7 @@ class ConteudoController extends Controller
         $user = $request->user();
 
         //validacao
-
+        return ['status' => true, 'conteudos' => date('Y-m-d H:i:s')];
         $conteudo = new Conteudo;
         
         $conteudo->titulo = $data['titulo'];
